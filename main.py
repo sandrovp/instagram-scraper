@@ -1,5 +1,14 @@
+from pathlib import Path
+from loguru import logger as log
+from fastapi import FastAPI
+import src.instagram as instagram
 from fastapi.responses import JSONResponse
 from fastapi import HTTPException
+
+
+
+
+app = FastAPI()
 
 @app.get("/scrape_user/{username}")
 async def scrape_user(username: str):
