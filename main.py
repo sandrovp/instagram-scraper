@@ -1,24 +1,24 @@
-from pathlib import Path
-from loguru import logger as log
-import asyncio
-import json
-from fastapi import FastAPI
-import src.instagram as instagram
-app = FastAPI()
-
-@app.get("/")
-def read_root():
-    return {"message": "Instagram Scraper API is running"}
+from fastapi.responses import JSONResponse
+from fastapi import HTTPException
 
 @app.get("/scrape_user/{username}")
 async def scrape_user(username: str):
-    user = await instagram.scrape_user(username)
-    return user
+    try:
+        user = await instagram.scrape_user(username)
+        return user
+    except Exception as e:
+        log.error(f"Erro ao buscar user {username}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.get("/scrape_user_posts/{username}")
 async def scrape_user_posts(username: str, max_pages: int = 3):
-    posts_all = []
-    async for post in instagram.scrape_user_posts(username, max_pages=max_pages):
-        posts_all.append(post)
-    log.success("scraped {} posts for user {}", len(posts_all), username)
-    return posts_all
+    try:
+        posts_all = []
+        async for post in instagram.scrape_user_posts(username, max_pages=max_pages):
+            posts_all.append(post)
+        log.success("scraped {} posts for user {}", len(posts_all), username)
+        return JSONResponse(content=posts_all)
+    except Exception as e:
+        log.error(f"Erro ao buscar posts do user {username}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
