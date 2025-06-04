@@ -1,0 +1,9 @@
+/.env
+/poetry.lock
+/pyproject.toml
+/results
+/run.py
+/test.py
+/ts2.json
+/venv
+/__pycache__
